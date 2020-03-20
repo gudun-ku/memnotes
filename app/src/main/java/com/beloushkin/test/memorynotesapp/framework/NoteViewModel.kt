@@ -4,28 +4,26 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.beloushkin.test.core.data.Note
-import com.beloushkin.test.core.repository.NoteRepository
-import com.beloushkin.test.core.usecase.AddNote
-import com.beloushkin.test.core.usecase.GetAllNotes
-import com.beloushkin.test.core.usecase.GetNote
-import com.beloushkin.test.core.usecase.RemoveNote
+import com.beloushkin.test.memorynotesapp.framework.di.ApplicationModule
+import com.beloushkin.test.memorynotesapp.framework.di.DaggerViewModelComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class NoteViewModel(application: Application): AndroidViewModel(application) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    // must be injected by di
-    val repository = NoteRepository(RoomNoteDataSource(application))
+    @Inject
+    lateinit var useCases: UseCases
 
-    // must be injected by di
-    val useCases = UseCases(
-        AddNote(repository),
-        GetAllNotes(repository),
-        GetNote(repository),
-        RemoveNote(repository)
-    )
+    init {
+        DaggerViewModelComponent.builder()
+            .applicationModule(ApplicationModule((getApplication())))
+            .build()
+            .inject(this)
+    }
+
 
     val saved = MutableLiveData<Boolean>()
     val currentNote = MutableLiveData<Note?>()

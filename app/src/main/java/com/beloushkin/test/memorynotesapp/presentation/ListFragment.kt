@@ -15,7 +15,6 @@ import com.beloushkin.test.memorynotesapp.framework.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 
 
-
 class ListFragment : Fragment(),ListAction {
 
     private var notesListAdapter = NotesListAdapter(arrayListOf(), this)
